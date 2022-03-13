@@ -5,6 +5,7 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (style)
 import Html.Events exposing (onClick)
+import Task
 
 
 main : Program () Model Msg
@@ -13,23 +14,26 @@ main =
         { init = init
         , view = view
         , update = update
-        , subscriptions = subscriptions
+        , subscriptions = \_ -> Sub.none
         }
 
 
 type alias Model =
     { board : Array Int
     , playerOnesTurn : Bool
+    , lastStonePit : Maybe Int
+    , gameFinished : Bool
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model (initArray 0 36 (repeat 14 0)) False, Cmd.none )
+    ( { board = initArray 0 36 (repeat 14 0), playerOnesTurn = False, lastStonePit = Nothing, gameFinished = False }, Cmd.none )
 
 
 type Msg
     = BoardClicked Int
+    | CheckGameState
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -40,12 +44,29 @@ update msg model =
                 ( model, Cmd.none )
 
             else
-                ( { model | board = boardClicked index model.board, playerOnesTurn = not model.playerOnesTurn }, Cmd.none )
+                ( { model | board = boardClicked index model.board, playerOnesTurn = not model.playerOnesTurn, lastStonePit = lastStonePitPosition index model.board }, Cmd.batch [ Task.perform (\_ -> CheckGameState) (Task.succeed ()) ] )
+
+        CheckGameState ->
+            ( { model | gameFinished = calculateGameFinished model.board }, Cmd.none )
 
 
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
+calculateGameFinished : Array Int -> Bool
+calculateGameFinished board =
+    Array.foldr (+) 0 board - Maybe.withDefault 0 (Array.get 0 board) - Maybe.withDefault 0 (Array.get 7 board) == 0
+
+
+lastStonePitPosition : Int -> Array Int -> Maybe Int
+lastStonePitPosition index board =
+    Just (calcLastStonePosition index board (Maybe.withDefault 0 (Array.get index board)))
+
+
+calcLastStonePosition : Int -> Array Int -> Int -> Int
+calcLastStonePosition index board stones =
+    if stones == 0 then
+        index
+
+    else
+        calcLastStonePosition (incrementRotatingIndex index board) board (stones - 1)
 
 
 view : Model -> Html Msg
@@ -66,7 +87,30 @@ view model =
         , viewBoard model
         , viewPitPlayer 0 model.board
         , viewPitPlayer 1 model.board
+        , div [] [ text ("Last stone was in pit with id: " ++ Maybe.withDefault "Not set yet" (Maybe.map String.fromInt model.lastStonePit)) ]
+        , viewWinnerIfGameFinished model
         ]
+
+
+viewWinnerIfGameFinished : Model -> Html msg
+viewWinnerIfGameFinished model =
+    if not model.gameFinished then
+        div [] []
+
+    else
+        div [] [ text ("Winner is" ++ winnerPlayer model) ]
+
+
+winnerPlayer : Model -> String
+winnerPlayer model =
+    if Maybe.withDefault 0 (Array.get 0 model.board) > Maybe.withDefault 0 (Array.get 7 model.board) then
+        "Player 1"
+
+    else if Maybe.withDefault 0 (Array.get 0 model.board) < Maybe.withDefault 0 (Array.get 7 model.board) then
+        "Player 2"
+
+    else
+        "None"
 
 
 viewBoard : Model -> Html Msg
@@ -151,7 +195,7 @@ boardCard playerOnesTurn index element =
 
 boardCardStyle : Bool -> Int -> List (Attribute Msg)
 boardCardStyle playerOnesTurn index =
-    if not playerOnesTurn && index < 7 || playerOnesTurn && index > 7 then
+    if not playerOnesTurn && index < 7 || playerOnesTurn && index >= 7 then
         [ onClick (BoardClicked index)
         , style "grid-area" (areaFromIndex index)
         , style "cursor" "pointer"
@@ -163,7 +207,7 @@ boardCardStyle playerOnesTurn index =
 
     else
         [ style "grid-area" (areaFromIndex index)
-        , style "background" "#36454F"
+        , style "background" "black"
         , style "border-radius" "6px"
         , style "text-align" "center"
         , style "padding" "0.5rem"
