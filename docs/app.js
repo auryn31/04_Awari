@@ -2704,7 +2704,7 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		p: func(record.p),
+		o: func(record.o),
 		L: record.L,
 		I: record.I
 	}
@@ -2974,7 +2974,7 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.p;
+		var message = !tag ? value : tag < 3 ? value.a : value.o;
 		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.L;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
@@ -5176,8 +5176,8 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Main$Model = F2(
-	function (board, playersTurn) {
-		return {o: board, u: playersTurn};
+	function (board, playerOnesTurn) {
+		return {w: board, t: playerOnesTurn};
 	});
 var $elm$core$Bitwise$and = _Bitwise_and;
 var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
@@ -5278,7 +5278,7 @@ var $author$project$Main$init = function (_v0) {
 				0,
 				36,
 				A2($elm$core$Array$repeat, 14, 0)),
-			0),
+			false),
 		$elm$core$Platform$Cmd$none);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -5374,24 +5374,18 @@ var $author$project$Main$boardClicked = F2(
 				startBoard);
 		}
 	});
+var $elm$core$Basics$not = _Basics_not;
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		var index = msg;
-		return ((index === 7) || ((!index) || (((index < 7) && (model.u === 1)) || ((index > 7) && (!model.u))))) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : ((!model.u) ? _Utils_Tuple2(
+		return ((index === 7) || ((!index) || (((index < 7) && model.t) || ((index > 7) && (!model.t))))) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
 			_Utils_update(
 				model,
 				{
-					o: A2($author$project$Main$boardClicked, index, model.o),
-					u: 1
+					w: A2($author$project$Main$boardClicked, index, model.w),
+					t: !model.t
 				}),
-			$elm$core$Platform$Cmd$none) : _Utils_Tuple2(
-			_Utils_update(
-				model,
-				{
-					o: A2($author$project$Main$boardClicked, index, model.o),
-					u: 0
-				}),
-			$elm$core$Platform$Cmd$none));
+			$elm$core$Platform$Cmd$none);
 	});
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
@@ -5453,18 +5447,37 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $author$project$Main$boardCard = F2(
-	function (index, element) {
+var $author$project$Main$boardCardStyle = F2(
+	function (playerOnesTurn, index) {
+		return (((!playerOnesTurn) && (index < 7)) || (playerOnesTurn && (index > 7))) ? _List_fromArray(
+			[
+				$elm$html$Html$Events$onClick(index),
+				A2(
+				$elm$html$Html$Attributes$style,
+				'grid-area',
+				$author$project$Main$areaFromIndex(index)),
+				A2($elm$html$Html$Attributes$style, 'cursor', 'pointer'),
+				A2($elm$html$Html$Attributes$style, 'background', '#36454F'),
+				A2($elm$html$Html$Attributes$style, 'border-radius', '6px'),
+				A2($elm$html$Html$Attributes$style, 'text-align', 'center'),
+				A2($elm$html$Html$Attributes$style, 'padding', '0.5rem')
+			]) : _List_fromArray(
+			[
+				A2(
+				$elm$html$Html$Attributes$style,
+				'grid-area',
+				$author$project$Main$areaFromIndex(index)),
+				A2($elm$html$Html$Attributes$style, 'background', '#36454F'),
+				A2($elm$html$Html$Attributes$style, 'border-radius', '6px'),
+				A2($elm$html$Html$Attributes$style, 'text-align', 'center'),
+				A2($elm$html$Html$Attributes$style, 'padding', '0.5rem')
+			]);
+	});
+var $author$project$Main$boardCard = F3(
+	function (playerOnesTurn, index, element) {
 		return A2(
 			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Events$onClick(index),
-					A2(
-					$elm$html$Html$Attributes$style,
-					'grid-area',
-					$author$project$Main$areaFromIndex(index))
-				]),
+			A2($author$project$Main$boardCardStyle, playerOnesTurn, index),
 			_List_fromArray(
 				[
 					$elm$html$Html$text(
@@ -5519,11 +5532,12 @@ var $elm$core$Array$indexedMap = F2(
 			A3($elm$core$Elm$JsArray$foldl, helper, initialBuilder, tree));
 	});
 var $author$project$Main$viewBoard = function (model) {
+	var boardGenerator = $author$project$Main$boardCard(model.t);
 	return A2(
 		$elm$html$Html$div,
 		$author$project$Main$boardSyle,
 		$elm$core$Array$toList(
-			A2($elm$core$Array$indexedMap, $author$project$Main$boardCard, model.o)));
+			A2($elm$core$Array$indexedMap, boardGenerator, model.w)));
 };
 var $elm$core$Maybe$map = F2(
 	function (f, maybe) {
@@ -5591,11 +5605,11 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						$elm$html$Html$text(
-						'It\'s your turn Player ' + $elm$core$String$fromInt(model.u))
+						'It\'s your turn Player ' + (model.t ? ' 1 ' : ' 0 '))
 					])),
 				$author$project$Main$viewBoard(model),
-				A2($author$project$Main$viewPitPlayer, 0, model.o),
-				A2($author$project$Main$viewPitPlayer, 1, model.o)
+				A2($author$project$Main$viewPitPlayer, 0, model.w),
+				A2($author$project$Main$viewPitPlayer, 1, model.w)
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(

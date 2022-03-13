@@ -3,7 +3,7 @@ module Main exposing (main)
 import Array exposing (Array, repeat)
 import Browser
 import Html exposing (..)
-import Html.Attributes exposing (class, style)
+import Html.Attributes exposing (style)
 import Html.Events exposing (onClick)
 
 
@@ -19,13 +19,13 @@ main =
 
 type alias Model =
     { board : Array Int
-    , playersTurn : Int
+    , playerOnesTurn : Bool
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model (initArray 0 36 (repeat 14 0)) 0, Cmd.none )
+    ( Model (initArray 0 36 (repeat 14 0)) False, Cmd.none )
 
 
 type Msg
@@ -36,14 +36,11 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         BoardClicked index ->
-            if index == 7 || index == 0 || index < 7 && model.playersTurn == 1 || index > 7 && model.playersTurn == 0 then
+            if index == 7 || index == 0 || index < 7 && model.playerOnesTurn || index > 7 && not model.playerOnesTurn then
                 ( model, Cmd.none )
 
-            else if model.playersTurn == 0 then
-                ( { model | board = boardClicked index model.board, playersTurn = 1 }, Cmd.none )
-
             else
-                ( { model | board = boardClicked index model.board, playersTurn = 0 }, Cmd.none )
+                ( { model | board = boardClicked index model.board, playerOnesTurn = not model.playerOnesTurn }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -55,7 +52,17 @@ view : Model -> Html Msg
 view model =
     div [ style "margin" "4rem" ]
         [ h1 [] [ text "Board" ]
-        , h3 [] [ text ("It's your turn Player " ++ String.fromInt model.playersTurn) ]
+        , h3 []
+            [ text
+                ("It's your turn Player "
+                    ++ (if model.playerOnesTurn then
+                            " 1 "
+
+                        else
+                            " 0 "
+                       )
+                )
+            ]
         , viewBoard model
         , viewPitPlayer 0 model.board
         , viewPitPlayer 1 model.board
@@ -64,9 +71,13 @@ view model =
 
 viewBoard : Model -> Html Msg
 viewBoard model =
+    let
+        boardGenerator =
+            boardCard model.playerOnesTurn
+    in
     div boardSyle
         (Array.toList <|
-            Array.indexedMap boardCard model.board
+            Array.indexedMap boardGenerator model.board
         )
 
 
@@ -133,9 +144,30 @@ areaFromIndex index =
             String.fromInt i
 
 
-boardCard : Int -> Int -> Html Msg
-boardCard index element =
-    div [ onClick (BoardClicked index), style "grid-area" (areaFromIndex index) ] [ text (String.fromInt element) ]
+boardCard : Bool -> Int -> Int -> Html Msg
+boardCard playerOnesTurn index element =
+    div (boardCardStyle playerOnesTurn index) [ text (String.fromInt element) ]
+
+
+boardCardStyle : Bool -> Int -> List (Attribute Msg)
+boardCardStyle playerOnesTurn index =
+    if not playerOnesTurn && index < 7 || playerOnesTurn && index > 7 then
+        [ onClick (BoardClicked index)
+        , style "grid-area" (areaFromIndex index)
+        , style "cursor" "pointer"
+        , style "background" "#36454F"
+        , style "border-radius" "6px"
+        , style "text-align" "center"
+        , style "padding" "0.5rem"
+        ]
+
+    else
+        [ style "grid-area" (areaFromIndex index)
+        , style "background" "#36454F"
+        , style "border-radius" "6px"
+        , style "text-align" "center"
+        , style "padding" "0.5rem"
+        ]
 
 
 viewPitPlayer : Int -> Array Int -> Html Msg
