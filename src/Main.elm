@@ -28,12 +28,11 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { board = initArray 0 36 (repeat 14 0), playerOnesTurn = False, lastStonePit = Nothing, gameFinished = False }, Cmd.none )
+    ( { board = initArray 0 3 (repeat 14 0), playerOnesTurn = False, lastStonePit = Nothing, gameFinished = False }, Cmd.none )
 
 
 type Msg
     = BoardClicked Int
-    | CheckGameState
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -44,10 +43,17 @@ update msg model =
                 ( model, Cmd.none )
 
             else
-                ( { model | board = boardClicked index model.board, playerOnesTurn = not model.playerOnesTurn, lastStonePit = lastStonePitPosition index model.board }, Cmd.batch [ Task.perform (\_ -> CheckGameState) (Task.succeed ()) ] )
+                let
+                    nextBoard =
+                        boardClicked index model.board
 
-        CheckGameState ->
-            ( { model | gameFinished = calculateGameFinished model.board }, Cmd.none )
+                    nextPlayer =
+                        not model.playerOnesTurn
+
+                    lastStoneInPitIndex =
+                        lastStonePitPosition index model.board
+                in
+                ( { model | board = nextBoard, playerOnesTurn = nextPlayer, lastStonePit = lastStoneInPitIndex, gameFinished = calculateGameFinished nextBoard }, Cmd.none )
 
 
 calculateGameFinished : Array Int -> Bool
