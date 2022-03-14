@@ -65,10 +65,10 @@ checkIfPlayerCanNotDoMove playerOnesTurn board =
 
 determineNextPlayer : Int -> Bool -> Array Int -> Bool
 determineNextPlayer index playerOnesTurn board =
-    if index == 0 || index == 7 then
+    if checkIfPlayerCanNotDoMove (not playerOnesTurn) board then
         playerOnesTurn
 
-    else if checkIfPlayerCanNotDoMove (not playerOnesTurn) board then
+    else if index == 0 || index == 7 then
         playerOnesTurn
 
     else
