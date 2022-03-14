@@ -27,7 +27,7 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { board = initArray 0 3 (repeat 14 0), playerOnesTurn = False, lastStonePit = Nothing, gameFinished = False }, Cmd.none )
+    ( { board = initArray 0 36 (repeat 14 0), playerOnesTurn = False, lastStonePit = Nothing, gameFinished = False }, Cmd.none )
 
 
 type Msg

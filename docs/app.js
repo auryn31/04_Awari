@@ -5271,7 +5271,7 @@ var $author$project$Main$init = function (_v0) {
 			g: A3(
 				$author$project$Main$initArray,
 				0,
-				3,
+				36,
 				A2($elm$core$Array$repeat, 14, 0)),
 			G: false,
 			H: $elm$core$Maybe$Nothing,
