@@ -26,7 +26,7 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { board = initArray 0 36 (repeat 14 0), playerOnesTurn = False, gameFinished = False }, Cmd.none )
+    ( { board = initArray 0 36 (repeat boardLength 0), playerOnesTurn = False, gameFinished = False }, Cmd.none )
 
 
 type Msg
@@ -54,6 +54,11 @@ update msg model =
                 ( { model | board = boardAfterStonesSet, playerOnesTurn = nextPlayer, gameFinished = calculateGameFinished boardAfterStonesSet }, Cmd.none )
 
 
+boardLength : Int
+boardLength =
+    14
+
+
 leftPitIndex : Int
 leftPitIndex =
     0
@@ -67,7 +72,7 @@ rightPitIndex =
 checkIfPlayerCanNotDoMove : Bool -> Array Int -> Bool
 checkIfPlayerCanNotDoMove playerOnesTurn board =
     if playerOnesTurn then
-        Array.foldr (+) 0 (Array.slice (rightPitIndex + 1) 14 board) == 0
+        Array.foldr (+) 0 (Array.slice (rightPitIndex + 1) boardLength board) == 0
 
     else
         Array.foldr (+) 0 (Array.slice (leftPitIndex + 1) rightPitIndex board) == 0
@@ -133,7 +138,7 @@ changesOnBoardAfterStonesSet playerOne lastStonesIndex board =
         else
             let
                 sumStones =
-                    Maybe.withDefault 0 (Array.get (14 - lastStonesIndex) board) + 1
+                    Maybe.withDefault 0 (Array.get (boardLength - lastStonesIndex) board) + 1
 
                 currentPit =
                     if playerOne then
@@ -146,7 +151,7 @@ changesOnBoardAfterStonesSet playerOne lastStonesIndex board =
                     Array.set lastStonesIndex 0 board
 
                 baordWithOppositeZero =
-                    Array.set (14 - lastStonesIndex) 0 baordWithIndexZero
+                    Array.set (boardLength - lastStonesIndex) 0 baordWithIndexZero
 
                 boardWithPitSum =
                     if playerOne then
