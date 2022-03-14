@@ -46,13 +46,20 @@ update msg model =
                     nextBoard =
                         boardClicked index model.board
 
-                    nextPlayer =
-                        not model.playerOnesTurn
-
                     lastStoneInPitIndex =
                         lastStonePitPosition index model.board
+
+                    nextPlayer =
+                        if Maybe.withDefault 1 lastStoneInPitIndex == 0 || Maybe.withDefault 1 lastStoneInPitIndex == 7 then
+                            model.playerOnesTurn
+
+                        else
+                            not model.playerOnesTurn
+
+                    boardAfterStonesSet =
+                        changesOnBoardAfterStonesSet model.playerOnesTurn lastStoneInPitIndex nextBoard
                 in
-                ( { model | board = nextBoard, playerOnesTurn = nextPlayer, lastStonePit = lastStoneInPitIndex, gameFinished = calculateGameFinished nextBoard }, Cmd.none )
+                ( { model | board = boardAfterStonesSet, playerOnesTurn = nextPlayer, lastStonePit = lastStoneInPitIndex, gameFinished = calculateGameFinished boardAfterStonesSet }, Cmd.none )
 
 
 calculateGameFinished : Array Int -> Bool
@@ -72,6 +79,48 @@ calcLastStonePosition index board stones =
 
     else
         calcLastStonePosition (incrementRotatingIndex index board) board (stones - 1)
+
+
+changesOnBoardAfterStonesSet : Bool -> Maybe Int -> Array Int -> Array Int
+changesOnBoardAfterStonesSet playerOne lastStonesIndex board =
+    case lastStonesIndex of
+        Nothing ->
+            board
+
+        Just index ->
+            if Maybe.withDefault 0 (Array.get index board) == 1 then
+                if index == 0 || index == 7 then
+                    board
+
+                else
+                    let
+                        sumStones =
+                            Maybe.withDefault 0 (Array.get (14 - index) board) + 1
+
+                        currentPit =
+                            if playerOne then
+                                Maybe.withDefault 0 (Array.get 7 board)
+
+                            else
+                                Maybe.withDefault 0 (Array.get 0 board)
+
+                        baordWithIndexZero =
+                            Array.set index 0 board
+
+                        baordWithOppositeZero =
+                            Array.set (14 - index) 0 baordWithIndexZero
+
+                        boardWithPitSum =
+                            if playerOne then
+                                Array.set 7 (sumStones + currentPit) baordWithOppositeZero
+
+                            else
+                                Array.set 0 (sumStones + currentPit) baordWithOppositeZero
+                    in
+                    boardWithPitSum
+
+            else
+                board
 
 
 view : Model -> Html Msg
