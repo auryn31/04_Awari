@@ -784,11 +784,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.M.B === region.R.B)
+	if (region.L.B === region.Q.B)
 	{
-		return 'on line ' + region.M.B;
+		return 'on line ' + region.L.B;
 	}
-	return 'on lines ' + region.M.B + ' through ' + region.R.B;
+	return 'on lines ' + region.L.B + ' through ' + region.Q.B;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.ax,
-		impl.aF,
-		impl.aD,
+		impl.aw,
+		impl.aE,
+		impl.aC,
 		function() { return function() {} }
 	);
 });
@@ -2705,8 +2705,8 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		q: func(record.q),
-		N: record.N,
-		K: record.K
+		M: record.M,
+		J: record.J
 	}
 });
 
@@ -2975,10 +2975,10 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.q;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.N;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.M;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.K) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.J) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3928,11 +3928,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.ax,
-		impl.aF,
-		impl.aD,
+		impl.aw,
+		impl.aE,
+		impl.aC,
 		function(sendToApp, initialModel) {
-			var view = impl.aG;
+			var view = impl.aF;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3964,12 +3964,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.ax,
-		impl.aF,
-		impl.aD,
+		impl.aw,
+		impl.aE,
+		impl.aC,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.L && impl.L(sendToApp)
-			var view = impl.aG;
+			var divertHrefToApp = impl.K && impl.K(sendToApp)
+			var view = impl.aF;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3977,12 +3977,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aq);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.ap);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aE) && (_VirtualDom_doc.title = title = doc.aE);
+				(title !== doc.aD) && (_VirtualDom_doc.title = title = doc.aD);
 			});
 		}
 	);
@@ -4038,12 +4038,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.az;
-	var onUrlRequest = impl.aA;
+	var onUrlChange = impl.ay;
+	var onUrlRequest = impl.az;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		L: function(sendToApp)
+		K: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4059,9 +4059,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.ad === next.ad
-							&& curr.V === next.V
-							&& curr.aa.a === next.aa.a
+							&& curr.ac === next.ac
+							&& curr.U === next.U
+							&& curr._.a === next._.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4069,13 +4069,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		ax: function(flags)
+		aw: function(flags)
 		{
-			return A3(impl.ax, flags, _Browser_getUrl(), key);
+			return A3(impl.aw, flags, _Browser_getUrl(), key);
 		},
-		aG: impl.aG,
 		aF: impl.aF,
-		aD: impl.aD
+		aE: impl.aE,
+		aC: impl.aC
 	});
 }
 
@@ -4141,17 +4141,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { av: 'hidden', ar: 'visibilitychange' }
+		? { au: 'hidden', aq: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { av: 'mozHidden', ar: 'mozvisibilitychange' }
+		? { au: 'mozHidden', aq: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { av: 'msHidden', ar: 'msvisibilitychange' }
+		? { au: 'msHidden', aq: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { av: 'webkitHidden', ar: 'webkitvisibilitychange' }
-		: { av: 'hidden', ar: 'visibilitychange' };
+		? { au: 'webkitHidden', aq: 'webkitvisibilitychange' }
+		: { au: 'hidden', aq: 'visibilitychange' };
 }
 
 
@@ -4232,12 +4232,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		ah: _Browser_getScene(),
-		ak: {
-			am: _Browser_window.pageXOffset,
-			an: _Browser_window.pageYOffset,
-			al: _Browser_doc.documentElement.clientWidth,
-			U: _Browser_doc.documentElement.clientHeight
+		ag: _Browser_getScene(),
+		aj: {
+			al: _Browser_window.pageXOffset,
+			am: _Browser_window.pageYOffset,
+			ak: _Browser_doc.documentElement.clientWidth,
+			T: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4247,8 +4247,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		al: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		U: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		ak: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		T: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4271,15 +4271,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			ah: {
-				al: node.scrollWidth,
-				U: node.scrollHeight
+			ag: {
+				ak: node.scrollWidth,
+				T: node.scrollHeight
 			},
-			ak: {
-				am: node.scrollLeft,
-				an: node.scrollTop,
-				al: node.clientWidth,
-				U: node.clientHeight
+			aj: {
+				al: node.scrollLeft,
+				am: node.scrollTop,
+				ak: node.clientWidth,
+				T: node.clientHeight
 			}
 		};
 	});
@@ -4309,18 +4309,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			ah: _Browser_getScene(),
-			ak: {
-				am: x,
-				an: y,
-				al: _Browser_doc.documentElement.clientWidth,
-				U: _Browser_doc.documentElement.clientHeight
+			ag: _Browser_getScene(),
+			aj: {
+				al: x,
+				am: y,
+				ak: _Browser_doc.documentElement.clientWidth,
+				T: _Browser_doc.documentElement.clientHeight
 			},
-			at: {
-				am: x + rect.left,
-				an: y + rect.top,
-				al: rect.width,
-				U: rect.height
+			as: {
+				al: x + rect.left,
+				am: y + rect.top,
+				ak: rect.width,
+				T: rect.height
 			}
 		};
 	});
@@ -4896,7 +4896,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {T: fragment, V: host, Z: path, aa: port_, ad: protocol, ae: query};
+		return {S: fragment, U: host, Y: path, _: port_, ac: protocol, ad: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5274,8 +5274,7 @@ var $author$project$Main$init = function (_v0) {
 				36,
 				A2($elm$core$Array$repeat, 14, 0)),
 			G: false,
-			H: $elm$core$Maybe$Nothing,
-			m: false
+			n: false
 		},
 		$elm$core$Platform$Cmd$none);
 };
@@ -5380,37 +5379,272 @@ var $author$project$Main$calculateGameFinished = function (board) {
 };
 var $author$project$Main$changesOnBoardAfterStonesSet = F3(
 	function (playerOne, lastStonesIndex, board) {
-		if (lastStonesIndex.$ === 1) {
-			return board;
-		} else {
-			var index = lastStonesIndex.a;
-			if (A2(
-				$elm$core$Maybe$withDefault,
-				0,
-				A2($elm$core$Array$get, index, board)) === 1) {
-				if ((!index) || (index === 7)) {
-					return board;
-				} else {
-					var sumStones = A2(
-						$elm$core$Maybe$withDefault,
-						0,
-						A2($elm$core$Array$get, 14 - index, board)) + 1;
-					var currentPit = playerOne ? A2(
-						$elm$core$Maybe$withDefault,
-						0,
-						A2($elm$core$Array$get, 7, board)) : A2(
-						$elm$core$Maybe$withDefault,
-						0,
-						A2($elm$core$Array$get, 0, board));
-					var baordWithIndexZero = A3($elm$core$Array$set, index, 0, board);
-					var baordWithOppositeZero = A3($elm$core$Array$set, 14 - index, 0, baordWithIndexZero);
-					var boardWithPitSum = playerOne ? A3($elm$core$Array$set, 7, sumStones + currentPit, baordWithOppositeZero) : A3($elm$core$Array$set, 0, sumStones + currentPit, baordWithOppositeZero);
-					return boardWithPitSum;
-				}
-			} else {
+		if (A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			A2($elm$core$Array$get, lastStonesIndex, board)) === 1) {
+			if ((!lastStonesIndex) || (lastStonesIndex === 7)) {
 				return board;
+			} else {
+				var sumStones = A2(
+					$elm$core$Maybe$withDefault,
+					0,
+					A2($elm$core$Array$get, 14 - lastStonesIndex, board)) + 1;
+				var currentPit = playerOne ? A2(
+					$elm$core$Maybe$withDefault,
+					0,
+					A2($elm$core$Array$get, 7, board)) : A2(
+					$elm$core$Maybe$withDefault,
+					0,
+					A2($elm$core$Array$get, 0, board));
+				var baordWithIndexZero = A3($elm$core$Array$set, lastStonesIndex, 0, board);
+				var baordWithOppositeZero = A3($elm$core$Array$set, 14 - lastStonesIndex, 0, baordWithIndexZero);
+				var boardWithPitSum = playerOne ? A3($elm$core$Array$set, 7, sumStones + currentPit, baordWithOppositeZero) : A3($elm$core$Array$set, 0, sumStones + currentPit, baordWithOppositeZero);
+				return boardWithPitSum;
+			}
+		} else {
+			return board;
+		}
+	});
+var $elm$core$Elm$JsArray$appendN = _JsArray_appendN;
+var $elm$core$Elm$JsArray$slice = _JsArray_slice;
+var $elm$core$Array$appendHelpBuilder = F2(
+	function (tail, builder) {
+		var tailLen = $elm$core$Elm$JsArray$length(tail);
+		var notAppended = ($elm$core$Array$branchFactor - $elm$core$Elm$JsArray$length(builder.c)) - tailLen;
+		var appended = A3($elm$core$Elm$JsArray$appendN, $elm$core$Array$branchFactor, builder.c, tail);
+		return (notAppended < 0) ? {
+			d: A2(
+				$elm$core$List$cons,
+				$elm$core$Array$Leaf(appended),
+				builder.d),
+			a: builder.a + 1,
+			c: A3($elm$core$Elm$JsArray$slice, notAppended, tailLen, tail)
+		} : ((!notAppended) ? {
+			d: A2(
+				$elm$core$List$cons,
+				$elm$core$Array$Leaf(appended),
+				builder.d),
+			a: builder.a + 1,
+			c: $elm$core$Elm$JsArray$empty
+		} : {d: builder.d, a: builder.a, c: appended});
+	});
+var $elm$core$List$drop = F2(
+	function (n, list) {
+		drop:
+		while (true) {
+			if (n <= 0) {
+				return list;
+			} else {
+				if (!list.b) {
+					return list;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs;
+					n = $temp$n;
+					list = $temp$list;
+					continue drop;
+				}
 			}
 		}
+	});
+var $elm$core$Array$sliceLeft = F2(
+	function (from, array) {
+		var len = array.a;
+		var tree = array.c;
+		var tail = array.d;
+		if (!from) {
+			return array;
+		} else {
+			if (_Utils_cmp(
+				from,
+				$elm$core$Array$tailIndex(len)) > -1) {
+				return A4(
+					$elm$core$Array$Array_elm_builtin,
+					len - from,
+					$elm$core$Array$shiftStep,
+					$elm$core$Elm$JsArray$empty,
+					A3(
+						$elm$core$Elm$JsArray$slice,
+						from - $elm$core$Array$tailIndex(len),
+						$elm$core$Elm$JsArray$length(tail),
+						tail));
+			} else {
+				var skipNodes = (from / $elm$core$Array$branchFactor) | 0;
+				var helper = F2(
+					function (node, acc) {
+						if (!node.$) {
+							var subTree = node.a;
+							return A3($elm$core$Elm$JsArray$foldr, helper, acc, subTree);
+						} else {
+							var leaf = node.a;
+							return A2($elm$core$List$cons, leaf, acc);
+						}
+					});
+				var leafNodes = A3(
+					$elm$core$Elm$JsArray$foldr,
+					helper,
+					_List_fromArray(
+						[tail]),
+					tree);
+				var nodesToInsert = A2($elm$core$List$drop, skipNodes, leafNodes);
+				if (!nodesToInsert.b) {
+					return $elm$core$Array$empty;
+				} else {
+					var head = nodesToInsert.a;
+					var rest = nodesToInsert.b;
+					var firstSlice = from - (skipNodes * $elm$core$Array$branchFactor);
+					var initialBuilder = {
+						d: _List_Nil,
+						a: 0,
+						c: A3(
+							$elm$core$Elm$JsArray$slice,
+							firstSlice,
+							$elm$core$Elm$JsArray$length(head),
+							head)
+					};
+					return A2(
+						$elm$core$Array$builderToArray,
+						true,
+						A3($elm$core$List$foldl, $elm$core$Array$appendHelpBuilder, initialBuilder, rest));
+				}
+			}
+		}
+	});
+var $elm$core$Array$fetchNewTail = F4(
+	function (shift, end, treeEnd, tree) {
+		fetchNewTail:
+		while (true) {
+			var pos = $elm$core$Array$bitMask & (treeEnd >>> shift);
+			var _v0 = A2($elm$core$Elm$JsArray$unsafeGet, pos, tree);
+			if (!_v0.$) {
+				var sub = _v0.a;
+				var $temp$shift = shift - $elm$core$Array$shiftStep,
+					$temp$end = end,
+					$temp$treeEnd = treeEnd,
+					$temp$tree = sub;
+				shift = $temp$shift;
+				end = $temp$end;
+				treeEnd = $temp$treeEnd;
+				tree = $temp$tree;
+				continue fetchNewTail;
+			} else {
+				var values = _v0.a;
+				return A3($elm$core$Elm$JsArray$slice, 0, $elm$core$Array$bitMask & end, values);
+			}
+		}
+	});
+var $elm$core$Array$hoistTree = F3(
+	function (oldShift, newShift, tree) {
+		hoistTree:
+		while (true) {
+			if ((_Utils_cmp(oldShift, newShift) < 1) || (!$elm$core$Elm$JsArray$length(tree))) {
+				return tree;
+			} else {
+				var _v0 = A2($elm$core$Elm$JsArray$unsafeGet, 0, tree);
+				if (!_v0.$) {
+					var sub = _v0.a;
+					var $temp$oldShift = oldShift - $elm$core$Array$shiftStep,
+						$temp$newShift = newShift,
+						$temp$tree = sub;
+					oldShift = $temp$oldShift;
+					newShift = $temp$newShift;
+					tree = $temp$tree;
+					continue hoistTree;
+				} else {
+					return tree;
+				}
+			}
+		}
+	});
+var $elm$core$Array$sliceTree = F3(
+	function (shift, endIdx, tree) {
+		var lastPos = $elm$core$Array$bitMask & (endIdx >>> shift);
+		var _v0 = A2($elm$core$Elm$JsArray$unsafeGet, lastPos, tree);
+		if (!_v0.$) {
+			var sub = _v0.a;
+			var newSub = A3($elm$core$Array$sliceTree, shift - $elm$core$Array$shiftStep, endIdx, sub);
+			return (!$elm$core$Elm$JsArray$length(newSub)) ? A3($elm$core$Elm$JsArray$slice, 0, lastPos, tree) : A3(
+				$elm$core$Elm$JsArray$unsafeSet,
+				lastPos,
+				$elm$core$Array$SubTree(newSub),
+				A3($elm$core$Elm$JsArray$slice, 0, lastPos + 1, tree));
+		} else {
+			return A3($elm$core$Elm$JsArray$slice, 0, lastPos, tree);
+		}
+	});
+var $elm$core$Array$sliceRight = F2(
+	function (end, array) {
+		var len = array.a;
+		var startShift = array.b;
+		var tree = array.c;
+		var tail = array.d;
+		if (_Utils_eq(end, len)) {
+			return array;
+		} else {
+			if (_Utils_cmp(
+				end,
+				$elm$core$Array$tailIndex(len)) > -1) {
+				return A4(
+					$elm$core$Array$Array_elm_builtin,
+					end,
+					startShift,
+					tree,
+					A3($elm$core$Elm$JsArray$slice, 0, $elm$core$Array$bitMask & end, tail));
+			} else {
+				var endIdx = $elm$core$Array$tailIndex(end);
+				var depth = $elm$core$Basics$floor(
+					A2(
+						$elm$core$Basics$logBase,
+						$elm$core$Array$branchFactor,
+						A2($elm$core$Basics$max, 1, endIdx - 1)));
+				var newShift = A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep);
+				return A4(
+					$elm$core$Array$Array_elm_builtin,
+					end,
+					newShift,
+					A3(
+						$elm$core$Array$hoistTree,
+						startShift,
+						newShift,
+						A3($elm$core$Array$sliceTree, startShift, endIdx, tree)),
+					A4($elm$core$Array$fetchNewTail, startShift, end, endIdx, tree));
+			}
+		}
+	});
+var $elm$core$Array$translateIndex = F2(
+	function (index, _v0) {
+		var len = _v0.a;
+		var posIndex = (index < 0) ? (len + index) : index;
+		return (posIndex < 0) ? 0 : ((_Utils_cmp(posIndex, len) > 0) ? len : posIndex);
+	});
+var $elm$core$Array$slice = F3(
+	function (from, to, array) {
+		var correctTo = A2($elm$core$Array$translateIndex, to, array);
+		var correctFrom = A2($elm$core$Array$translateIndex, from, array);
+		return (_Utils_cmp(correctFrom, correctTo) > 0) ? $elm$core$Array$empty : A2(
+			$elm$core$Array$sliceLeft,
+			correctFrom,
+			A2($elm$core$Array$sliceRight, correctTo, array));
+	});
+var $author$project$Main$checkIfPlayerCanNotDoMove = F2(
+	function (playerOnesTurn, board) {
+		return playerOnesTurn ? (!A3(
+			$elm$core$Array$foldr,
+			$elm$core$Basics$add,
+			0,
+			A3($elm$core$Array$slice, 8, 14, board))) : (!A3(
+			$elm$core$Array$foldr,
+			$elm$core$Basics$add,
+			0,
+			A3($elm$core$Array$slice, 1, 7, board)));
+	});
+var $elm$core$Basics$not = _Basics_not;
+var $author$project$Main$determineNextPlayer = F3(
+	function (index, playerOnesTurn, board) {
+		return ((!index) || (index === 7)) ? playerOnesTurn : (A2($author$project$Main$checkIfPlayerCanNotDoMove, !playerOnesTurn, board) ? playerOnesTurn : (!playerOnesTurn));
 	});
 var $author$project$Main$calcLastStonePosition = F3(
 	function (index, board, stones) {
@@ -5431,35 +5665,35 @@ var $author$project$Main$calcLastStonePosition = F3(
 	});
 var $author$project$Main$lastStonePitPosition = F2(
 	function (index, board) {
-		return $elm$core$Maybe$Just(
-			A3(
-				$author$project$Main$calcLastStonePosition,
-				index,
-				board,
-				A2(
-					$elm$core$Maybe$withDefault,
-					0,
-					A2($elm$core$Array$get, index, board))));
+		return A3(
+			$author$project$Main$calcLastStonePosition,
+			index,
+			board,
+			A2(
+				$elm$core$Maybe$withDefault,
+				0,
+				A2($elm$core$Array$get, index, board)));
 	});
-var $elm$core$Basics$not = _Basics_not;
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		var index = msg;
-		if ((index === 7) || ((!index) || (((index < 7) && model.m) || ((index > 7) && (!model.m))))) {
+		if ((index === 7) || ((!index) || (((index < 7) && model.n) || ((index > 7) && (!model.n))))) {
 			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		} else {
-			var nextBoard = A2($author$project$Main$boardClicked, index, model.g);
 			var lastStoneInPitIndex = A2($author$project$Main$lastStonePitPosition, index, model.g);
-			var nextPlayer = ((!A2($elm$core$Maybe$withDefault, 1, lastStoneInPitIndex)) || (A2($elm$core$Maybe$withDefault, 1, lastStoneInPitIndex) === 7)) ? model.m : (!model.m);
-			var boardAfterStonesSet = A3($author$project$Main$changesOnBoardAfterStonesSet, model.m, lastStoneInPitIndex, nextBoard);
+			var boardAfterStonesSet = A3(
+				$author$project$Main$changesOnBoardAfterStonesSet,
+				model.n,
+				lastStoneInPitIndex,
+				A2($author$project$Main$boardClicked, index, model.g));
+			var nextPlayer = A3($author$project$Main$determineNextPlayer, lastStoneInPitIndex, model.n, boardAfterStonesSet);
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
 					{
 						g: boardAfterStonesSet,
 						G: $author$project$Main$calculateGameFinished(boardAfterStonesSet),
-						H: lastStoneInPitIndex,
-						m: nextPlayer
+						n: nextPlayer
 					}),
 				$elm$core$Platform$Cmd$none);
 		}
@@ -5467,16 +5701,6 @@ var $author$project$Main$update = F2(
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$h3 = _VirtualDom_node('h3');
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (!maybe.$) {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
@@ -5619,13 +5843,23 @@ var $elm$core$Array$indexedMap = F2(
 			A3($elm$core$Elm$JsArray$foldl, helper, initialBuilder, tree));
 	});
 var $author$project$Main$viewBoard = function (model) {
-	var boardGenerator = $author$project$Main$boardCard(model.m);
+	var boardGenerator = $author$project$Main$boardCard(model.n);
 	return A2(
 		$elm$html$Html$div,
 		$author$project$Main$boardSyle,
 		$elm$core$Array$toList(
 			A2($elm$core$Array$indexedMap, boardGenerator, model.g)));
 };
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
 var $author$project$Main$viewPitPlayer = F2(
 	function (player, board) {
 		return (!player) ? A2(
@@ -5711,33 +5945,22 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						$elm$html$Html$text(
-						'It\'s your turn Player ' + (model.m ? ' 1 ' : ' 0 '))
+						'It\'s your turn Player ' + (model.n ? ' 1 ' : ' 0 '))
 					])),
 				$author$project$Main$viewBoard(model),
 				A2($author$project$Main$viewPitPlayer, 0, model.g),
 				A2($author$project$Main$viewPitPlayer, 1, model.g),
-				A2(
-				$elm$html$Html$div,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						'Last stone was in pit with id: ' + A2(
-							$elm$core$Maybe$withDefault,
-							'Not set yet',
-							A2($elm$core$Maybe$map, $elm$core$String$fromInt, model.H)))
-					])),
 				$author$project$Main$viewWinnerIfGameFinished(model)
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{
-		ax: $author$project$Main$init,
-		aD: function (_v0) {
+		aw: $author$project$Main$init,
+		aC: function (_v0) {
 			return $elm$core$Platform$Sub$none;
 		},
-		aF: $author$project$Main$update,
-		aG: $author$project$Main$view
+		aE: $author$project$Main$update,
+		aF: $author$project$Main$view
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));

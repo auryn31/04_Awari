@@ -20,14 +20,13 @@ main =
 type alias Model =
     { board : Array Int
     , playerOnesTurn : Bool
-    , lastStonePit : Maybe Int
     , gameFinished : Bool
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { board = initArray 0 36 (repeat 14 0), playerOnesTurn = False, lastStonePit = Nothing, gameFinished = False }, Cmd.none )
+    ( { board = initArray 0 36 (repeat 14 0), playerOnesTurn = False, gameFinished = False }, Cmd.none )
 
 
 type Msg
@@ -43,23 +42,37 @@ update msg model =
 
             else
                 let
-                    nextBoard =
-                        boardClicked index model.board
-
                     lastStoneInPitIndex =
                         lastStonePitPosition index model.board
 
-                    nextPlayer =
-                        if Maybe.withDefault 1 lastStoneInPitIndex == 0 || Maybe.withDefault 1 lastStoneInPitIndex == 7 then
-                            model.playerOnesTurn
-
-                        else
-                            not model.playerOnesTurn
-
                     boardAfterStonesSet =
-                        changesOnBoardAfterStonesSet model.playerOnesTurn lastStoneInPitIndex nextBoard
+                        changesOnBoardAfterStonesSet model.playerOnesTurn lastStoneInPitIndex (boardClicked index model.board)
+
+                    nextPlayer =
+                        determineNextPlayer lastStoneInPitIndex model.playerOnesTurn boardAfterStonesSet
                 in
-                ( { model | board = boardAfterStonesSet, playerOnesTurn = nextPlayer, lastStonePit = lastStoneInPitIndex, gameFinished = calculateGameFinished boardAfterStonesSet }, Cmd.none )
+                ( { model | board = boardAfterStonesSet, playerOnesTurn = nextPlayer, gameFinished = calculateGameFinished boardAfterStonesSet }, Cmd.none )
+
+
+checkIfPlayerCanNotDoMove : Bool -> Array Int -> Bool
+checkIfPlayerCanNotDoMove playerOnesTurn board =
+    if playerOnesTurn then
+        Array.foldr (+) 0 (Array.slice 8 14 board) == 0
+
+    else
+        Array.foldr (+) 0 (Array.slice 1 7 board) == 0
+
+
+determineNextPlayer : Int -> Bool -> Array Int -> Bool
+determineNextPlayer index playerOnesTurn board =
+    if index == 0 || index == 7 then
+        playerOnesTurn
+
+    else if checkIfPlayerCanNotDoMove (not playerOnesTurn) board then
+        playerOnesTurn
+
+    else
+        not playerOnesTurn
 
 
 calculateGameFinished : Array Int -> Bool
@@ -67,9 +80,9 @@ calculateGameFinished board =
     Array.foldr (+) 0 board - Maybe.withDefault 0 (Array.get 0 board) - Maybe.withDefault 0 (Array.get 7 board) == 0
 
 
-lastStonePitPosition : Int -> Array Int -> Maybe Int
+lastStonePitPosition : Int -> Array Int -> Int
 lastStonePitPosition index board =
-    Just (calcLastStonePosition index board (Maybe.withDefault 0 (Array.get index board)))
+    calcLastStonePosition index board (Maybe.withDefault 0 (Array.get index board))
 
 
 calcLastStonePosition : Int -> Array Int -> Int -> Int
@@ -81,46 +94,41 @@ calcLastStonePosition index board stones =
         calcLastStonePosition (incrementRotatingIndex index board) board (stones - 1)
 
 
-changesOnBoardAfterStonesSet : Bool -> Maybe Int -> Array Int -> Array Int
+changesOnBoardAfterStonesSet : Bool -> Int -> Array Int -> Array Int
 changesOnBoardAfterStonesSet playerOne lastStonesIndex board =
-    case lastStonesIndex of
-        Nothing ->
+    if Maybe.withDefault 0 (Array.get lastStonesIndex board) == 1 then
+        if lastStonesIndex == 0 || lastStonesIndex == 7 then
             board
 
-        Just index ->
-            if Maybe.withDefault 0 (Array.get index board) == 1 then
-                if index == 0 || index == 7 then
-                    board
+        else
+            let
+                sumStones =
+                    Maybe.withDefault 0 (Array.get (14 - lastStonesIndex) board) + 1
 
-                else
-                    let
-                        sumStones =
-                            Maybe.withDefault 0 (Array.get (14 - index) board) + 1
+                currentPit =
+                    if playerOne then
+                        Maybe.withDefault 0 (Array.get 7 board)
 
-                        currentPit =
-                            if playerOne then
-                                Maybe.withDefault 0 (Array.get 7 board)
+                    else
+                        Maybe.withDefault 0 (Array.get 0 board)
 
-                            else
-                                Maybe.withDefault 0 (Array.get 0 board)
+                baordWithIndexZero =
+                    Array.set lastStonesIndex 0 board
 
-                        baordWithIndexZero =
-                            Array.set index 0 board
+                baordWithOppositeZero =
+                    Array.set (14 - lastStonesIndex) 0 baordWithIndexZero
 
-                        baordWithOppositeZero =
-                            Array.set (14 - index) 0 baordWithIndexZero
+                boardWithPitSum =
+                    if playerOne then
+                        Array.set 7 (sumStones + currentPit) baordWithOppositeZero
 
-                        boardWithPitSum =
-                            if playerOne then
-                                Array.set 7 (sumStones + currentPit) baordWithOppositeZero
+                    else
+                        Array.set 0 (sumStones + currentPit) baordWithOppositeZero
+            in
+            boardWithPitSum
 
-                            else
-                                Array.set 0 (sumStones + currentPit) baordWithOppositeZero
-                    in
-                    boardWithPitSum
-
-            else
-                board
+    else
+        board
 
 
 view : Model -> Html Msg
@@ -141,7 +149,6 @@ view model =
         , viewBoard model
         , viewPitPlayer 0 model.board
         , viewPitPlayer 1 model.board
-        , div [] [ text ("Last stone was in pit with id: " ++ Maybe.withDefault "Not set yet" (Maybe.map String.fromInt model.lastStonePit)) ]
         , viewWinnerIfGameFinished model
         ]
 
