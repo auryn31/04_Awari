@@ -5175,6 +5175,11 @@ var $elm$core$Task$perform = F2(
 			A2($elm$core$Task$map, toMessage, task));
 	});
 var $elm$browser$Browser$element = _Browser_element;
+var $author$project$Main$leftPitIndex = 0;
+var $author$project$Main$rightPitIndex = 7;
+var $author$project$Main$indexIsOnPit = function (index) {
+	return _Utils_eq(index, $author$project$Main$leftPitIndex) || _Utils_eq(index, $author$project$Main$rightPitIndex);
+};
 var $elm$core$Bitwise$and = _Bitwise_and;
 var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
 var $elm$core$Array$bitMask = 4294967295 >>> (32 - $elm$core$Array$shiftStep);
@@ -5234,7 +5239,7 @@ var $author$project$Main$initArray = F3(
 			if (!stones) {
 				return array;
 			} else {
-				if ((!index) || (index === 7)) {
+				if ($author$project$Main$indexIsOnPit(index)) {
 					var $temp$index = index + 1,
 						$temp$stones = stones,
 						$temp$array = array;
@@ -5353,7 +5358,7 @@ var $author$project$Main$placeStones = F3(
 	});
 var $author$project$Main$boardClicked = F2(
 	function (index, board) {
-		if ((!index) || (index === 7)) {
+		if ($author$project$Main$indexIsOnPit(index)) {
 			return board;
 		} else {
 			var stonesLeft = A2(
@@ -5368,14 +5373,21 @@ var $author$project$Main$boardClicked = F2(
 				startBoard);
 		}
 	});
+var $author$project$Main$getPitValue = F2(
+	function (index, board) {
+		return A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			A2($elm$core$Array$get, index, board));
+	});
+var $author$project$Main$getLeftPitValue = function (board) {
+	return A2($author$project$Main$getPitValue, $author$project$Main$leftPitIndex, board);
+};
+var $author$project$Main$getRightPitValue = function (board) {
+	return A2($author$project$Main$getPitValue, $author$project$Main$rightPitIndex, board);
+};
 var $author$project$Main$calculateGameFinished = function (board) {
-	return !((A3($elm$core$Array$foldr, $elm$core$Basics$add, 0, board) - A2(
-		$elm$core$Maybe$withDefault,
-		0,
-		A2($elm$core$Array$get, 0, board))) - A2(
-		$elm$core$Maybe$withDefault,
-		0,
-		A2($elm$core$Array$get, 7, board)));
+	return !((A3($elm$core$Array$foldr, $elm$core$Basics$add, 0, board) - $author$project$Main$getLeftPitValue(board)) - $author$project$Main$getRightPitValue(board));
 };
 var $author$project$Main$changesOnBoardAfterStonesSet = F3(
 	function (playerOne, lastStonesIndex, board) {
@@ -5383,23 +5395,17 @@ var $author$project$Main$changesOnBoardAfterStonesSet = F3(
 			$elm$core$Maybe$withDefault,
 			0,
 			A2($elm$core$Array$get, lastStonesIndex, board)) === 1) {
-			if ((!lastStonesIndex) || (lastStonesIndex === 7)) {
+			if ($author$project$Main$indexIsOnPit(lastStonesIndex)) {
 				return board;
 			} else {
 				var sumStones = A2(
 					$elm$core$Maybe$withDefault,
 					0,
 					A2($elm$core$Array$get, 14 - lastStonesIndex, board)) + 1;
-				var currentPit = playerOne ? A2(
-					$elm$core$Maybe$withDefault,
-					0,
-					A2($elm$core$Array$get, 7, board)) : A2(
-					$elm$core$Maybe$withDefault,
-					0,
-					A2($elm$core$Array$get, 0, board));
+				var currentPit = playerOne ? $author$project$Main$getRightPitValue(board) : $author$project$Main$getLeftPitValue(board);
 				var baordWithIndexZero = A3($elm$core$Array$set, lastStonesIndex, 0, board);
 				var baordWithOppositeZero = A3($elm$core$Array$set, 14 - lastStonesIndex, 0, baordWithIndexZero);
-				var boardWithPitSum = playerOne ? A3($elm$core$Array$set, 7, sumStones + currentPit, baordWithOppositeZero) : A3($elm$core$Array$set, 0, sumStones + currentPit, baordWithOppositeZero);
+				var boardWithPitSum = playerOne ? A3($elm$core$Array$set, $author$project$Main$rightPitIndex, sumStones + currentPit, baordWithOppositeZero) : A3($elm$core$Array$set, $author$project$Main$leftPitIndex, sumStones + currentPit, baordWithOppositeZero);
 				return boardWithPitSum;
 			}
 		} else {
@@ -5635,16 +5641,16 @@ var $author$project$Main$checkIfPlayerCanNotDoMove = F2(
 			$elm$core$Array$foldr,
 			$elm$core$Basics$add,
 			0,
-			A3($elm$core$Array$slice, 8, 14, board))) : (!A3(
+			A3($elm$core$Array$slice, $author$project$Main$rightPitIndex + 1, 14, board))) : (!A3(
 			$elm$core$Array$foldr,
 			$elm$core$Basics$add,
 			0,
-			A3($elm$core$Array$slice, 1, 7, board)));
+			A3($elm$core$Array$slice, $author$project$Main$leftPitIndex + 1, $author$project$Main$rightPitIndex, board)));
 	});
 var $elm$core$Basics$not = _Basics_not;
 var $author$project$Main$determineNextPlayer = F3(
 	function (index, playerOnesTurn, board) {
-		return ((!index) || (index === 7)) ? playerOnesTurn : (A2($author$project$Main$checkIfPlayerCanNotDoMove, !playerOnesTurn, board) ? playerOnesTurn : (!playerOnesTurn));
+		return A2($author$project$Main$checkIfPlayerCanNotDoMove, !playerOnesTurn, board) ? playerOnesTurn : ($author$project$Main$indexIsOnPit(index) ? playerOnesTurn : (!playerOnesTurn));
 	});
 var $author$project$Main$calcLastStonePosition = F3(
 	function (index, board, stones) {
@@ -5677,7 +5683,7 @@ var $author$project$Main$lastStonePitPosition = F2(
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		var index = msg;
-		if ((index === 7) || ((!index) || (((index < 7) && model.n) || ((index > 7) && (!model.n))))) {
+		if ($author$project$Main$indexIsOnPit(index) || (((_Utils_cmp(index, $author$project$Main$rightPitIndex) < 0) && model.n) || ((_Utils_cmp(index, $author$project$Main$rightPitIndex) > 0) && (!model.n)))) {
 			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		} else {
 			var lastStoneInPitIndex = A2($author$project$Main$lastStonePitPosition, index, model.g);
@@ -5760,7 +5766,7 @@ var $elm$html$Html$Events$onClick = function (msg) {
 };
 var $author$project$Main$boardCardStyle = F2(
 	function (playerOnesTurn, index) {
-		return (((!playerOnesTurn) && (index < 7)) || (playerOnesTurn && (index >= 7))) ? _List_fromArray(
+		return (((!playerOnesTurn) && (_Utils_cmp(index, $author$project$Main$rightPitIndex) < 0)) || (playerOnesTurn && (_Utils_cmp(index, $author$project$Main$rightPitIndex) > -1))) ? _List_fromArray(
 			[
 				$elm$html$Html$Events$onClick(index),
 				A2(
@@ -5850,16 +5856,6 @@ var $author$project$Main$viewBoard = function (model) {
 		$elm$core$Array$toList(
 			A2($elm$core$Array$indexedMap, boardGenerator, model.g)));
 };
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (!maybe.$) {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
 var $author$project$Main$viewPitPlayer = F2(
 	function (player, board) {
 		return (!player) ? A2(
@@ -5870,13 +5866,8 @@ var $author$project$Main$viewPitPlayer = F2(
 					$elm$html$Html$text(
 					'Player ' + $elm$core$String$fromInt(player)),
 					$elm$html$Html$text(
-					' Pit contains: ' + (A2(
-						$elm$core$Maybe$withDefault,
-						'-',
-						A2(
-							$elm$core$Maybe$map,
-							$elm$core$String$fromInt,
-							A2($elm$core$Array$get, 0, board))) + ' Stones'))
+					' Pit contains: ' + ($elm$core$String$fromInt(
+						$author$project$Main$getLeftPitValue(board)) + ' Stones'))
 				])) : A2(
 			$elm$html$Html$div,
 			_List_Nil,
@@ -5885,33 +5876,16 @@ var $author$project$Main$viewPitPlayer = F2(
 					$elm$html$Html$text(
 					'Player ' + $elm$core$String$fromInt(player)),
 					$elm$html$Html$text(
-					' Pit contains: ' + (A2(
-						$elm$core$Maybe$withDefault,
-						'-',
-						A2(
-							$elm$core$Maybe$map,
-							$elm$core$String$fromInt,
-							A2($elm$core$Array$get, 7, board))) + ' Stones'))
+					' Pit contains: ' + ($elm$core$String$fromInt(
+						$author$project$Main$getRightPitValue(board)) + ' Stones'))
 				]));
 	});
 var $author$project$Main$winnerPlayer = function (model) {
 	return (_Utils_cmp(
-		A2(
-			$elm$core$Maybe$withDefault,
-			0,
-			A2($elm$core$Array$get, 0, model.g)),
-		A2(
-			$elm$core$Maybe$withDefault,
-			0,
-			A2($elm$core$Array$get, 7, model.g))) > 0) ? 'Player 1' : ((_Utils_cmp(
-		A2(
-			$elm$core$Maybe$withDefault,
-			0,
-			A2($elm$core$Array$get, 0, model.g)),
-		A2(
-			$elm$core$Maybe$withDefault,
-			0,
-			A2($elm$core$Array$get, 7, model.g))) < 0) ? 'Player 2' : 'None');
+		$author$project$Main$getLeftPitValue(model.g),
+		$author$project$Main$getRightPitValue(model.g)) > 0) ? 'Player 1' : ((_Utils_cmp(
+		$author$project$Main$getLeftPitValue(model.g),
+		$author$project$Main$getRightPitValue(model.g)) < 0) ? 'Player 2' : 'None');
 };
 var $author$project$Main$viewWinnerIfGameFinished = function (model) {
 	return (!model.G) ? A2($elm$html$Html$div, _List_Nil, _List_Nil) : A2(
