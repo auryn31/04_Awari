@@ -784,11 +784,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.K.B === region.P.B)
+	if (region.M.B === region.R.B)
 	{
-		return 'on line ' + region.K.B;
+		return 'on line ' + region.M.B;
 	}
-	return 'on lines ' + region.K.B + ' through ' + region.P.B;
+	return 'on lines ' + region.M.B + ' through ' + region.R.B;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.av,
+		impl.ax,
+		impl.aF,
 		impl.aD,
-		impl.aB,
 		function() { return function() {} }
 	);
 });
@@ -2704,9 +2704,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		o: func(record.o),
-		L: record.L,
-		I: record.I
+		p: func(record.p),
+		N: record.N,
+		K: record.K
 	}
 });
 
@@ -2974,11 +2974,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.o;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.L;
+		var message = !tag ? value : tag < 3 ? value.a : value.p;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.N;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.I) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.K) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3928,11 +3928,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.av,
+		impl.ax,
+		impl.aF,
 		impl.aD,
-		impl.aB,
 		function(sendToApp, initialModel) {
-			var view = impl.aE;
+			var view = impl.aG;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3964,12 +3964,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.av,
+		impl.ax,
+		impl.aF,
 		impl.aD,
-		impl.aB,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.J && impl.J(sendToApp)
-			var view = impl.aE;
+			var divertHrefToApp = impl.L && impl.L(sendToApp)
+			var view = impl.aG;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3977,12 +3977,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.ao);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aq);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aC) && (_VirtualDom_doc.title = title = doc.aC);
+				(title !== doc.aE) && (_VirtualDom_doc.title = title = doc.aE);
 			});
 		}
 	);
@@ -4038,12 +4038,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.ax;
-	var onUrlRequest = impl.ay;
+	var onUrlChange = impl.az;
+	var onUrlRequest = impl.aA;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		J: function(sendToApp)
+		L: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4059,9 +4059,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.ab === next.ab
-							&& curr.T === next.T
-							&& curr.Z.a === next.Z.a
+							&& curr.ad === next.ad
+							&& curr.V === next.V
+							&& curr.aa.a === next.aa.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4069,13 +4069,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		av: function(flags)
+		ax: function(flags)
 		{
-			return A3(impl.av, flags, _Browser_getUrl(), key);
+			return A3(impl.ax, flags, _Browser_getUrl(), key);
 		},
-		aE: impl.aE,
-		aD: impl.aD,
-		aB: impl.aB
+		aG: impl.aG,
+		aF: impl.aF,
+		aD: impl.aD
 	});
 }
 
@@ -4141,17 +4141,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { at: 'hidden', ap: 'visibilitychange' }
+		? { av: 'hidden', ar: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { at: 'mozHidden', ap: 'mozvisibilitychange' }
+		? { av: 'mozHidden', ar: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { at: 'msHidden', ap: 'msvisibilitychange' }
+		? { av: 'msHidden', ar: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { at: 'webkitHidden', ap: 'webkitvisibilitychange' }
-		: { at: 'hidden', ap: 'visibilitychange' };
+		? { av: 'webkitHidden', ar: 'webkitvisibilitychange' }
+		: { av: 'hidden', ar: 'visibilitychange' };
 }
 
 
@@ -4232,12 +4232,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		af: _Browser_getScene(),
-		ai: {
-			ak: _Browser_window.pageXOffset,
-			al: _Browser_window.pageYOffset,
-			aj: _Browser_doc.documentElement.clientWidth,
-			S: _Browser_doc.documentElement.clientHeight
+		ah: _Browser_getScene(),
+		ak: {
+			am: _Browser_window.pageXOffset,
+			an: _Browser_window.pageYOffset,
+			al: _Browser_doc.documentElement.clientWidth,
+			U: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4247,8 +4247,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		aj: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		S: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		al: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		U: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4271,15 +4271,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			af: {
-				aj: node.scrollWidth,
-				S: node.scrollHeight
+			ah: {
+				al: node.scrollWidth,
+				U: node.scrollHeight
 			},
-			ai: {
-				ak: node.scrollLeft,
-				al: node.scrollTop,
-				aj: node.clientWidth,
-				S: node.clientHeight
+			ak: {
+				am: node.scrollLeft,
+				an: node.scrollTop,
+				al: node.clientWidth,
+				U: node.clientHeight
 			}
 		};
 	});
@@ -4309,18 +4309,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			af: _Browser_getScene(),
-			ai: {
-				ak: x,
-				al: y,
-				aj: _Browser_doc.documentElement.clientWidth,
-				S: _Browser_doc.documentElement.clientHeight
+			ah: _Browser_getScene(),
+			ak: {
+				am: x,
+				an: y,
+				al: _Browser_doc.documentElement.clientWidth,
+				U: _Browser_doc.documentElement.clientHeight
 			},
-			ar: {
-				ak: x + rect.left,
-				al: y + rect.top,
-				aj: rect.width,
-				S: rect.height
+			at: {
+				am: x + rect.left,
+				an: y + rect.top,
+				al: rect.width,
+				U: rect.height
 			}
 		};
 	});
@@ -4896,7 +4896,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {R: fragment, T: host, X: path, Z: port_, ab: protocol, ac: query};
+		return {T: fragment, V: host, Z: path, aa: port_, ad: protocol, ae: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5175,10 +5175,6 @@ var $elm$core$Task$perform = F2(
 			A2($elm$core$Task$map, toMessage, task));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Main$Model = F2(
-	function (board, playerOnesTurn) {
-		return {w: board, t: playerOnesTurn};
-	});
 var $elm$core$Bitwise$and = _Bitwise_and;
 var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
 var $elm$core$Array$bitMask = 4294967295 >>> (32 - $elm$core$Array$shiftStep);
@@ -5271,21 +5267,20 @@ var $elm$core$Array$repeat = F2(
 	});
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		A2(
-			$author$project$Main$Model,
-			A3(
+		{
+			g: A3(
 				$author$project$Main$initArray,
 				0,
-				36,
+				3,
 				A2($elm$core$Array$repeat, 14, 0)),
-			false),
+			G: false,
+			H: $elm$core$Maybe$Nothing,
+			q: false
+		},
 		$elm$core$Platform$Cmd$none);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Main$subscriptions = function (model) {
-	return $elm$core$Platform$Sub$none;
-};
 var $elm$core$Array$getHelp = F3(
 	function (shift, index, tree) {
 		getHelp:
@@ -5374,22 +5369,79 @@ var $author$project$Main$boardClicked = F2(
 				startBoard);
 		}
 	});
+var $author$project$Main$calculateGameFinished = function (board) {
+	return !((A3($elm$core$Array$foldr, $elm$core$Basics$add, 0, board) - A2(
+		$elm$core$Maybe$withDefault,
+		0,
+		A2($elm$core$Array$get, 0, board))) - A2(
+		$elm$core$Maybe$withDefault,
+		0,
+		A2($elm$core$Array$get, 7, board)));
+};
+var $author$project$Main$calcLastStonePosition = F3(
+	function (index, board, stones) {
+		calcLastStonePosition:
+		while (true) {
+			if (!stones) {
+				return index;
+			} else {
+				var $temp$index = A2($author$project$Main$incrementRotatingIndex, index, board),
+					$temp$board = board,
+					$temp$stones = stones - 1;
+				index = $temp$index;
+				board = $temp$board;
+				stones = $temp$stones;
+				continue calcLastStonePosition;
+			}
+		}
+	});
+var $author$project$Main$lastStonePitPosition = F2(
+	function (index, board) {
+		return $elm$core$Maybe$Just(
+			A3(
+				$author$project$Main$calcLastStonePosition,
+				index,
+				board,
+				A2(
+					$elm$core$Maybe$withDefault,
+					0,
+					A2($elm$core$Array$get, index, board))));
+	});
 var $elm$core$Basics$not = _Basics_not;
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		var index = msg;
-		return ((index === 7) || ((!index) || (((index < 7) && model.t) || ((index > 7) && (!model.t))))) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
-			_Utils_update(
-				model,
-				{
-					w: A2($author$project$Main$boardClicked, index, model.w),
-					t: !model.t
-				}),
-			$elm$core$Platform$Cmd$none);
+		if ((index === 7) || ((!index) || (((index < 7) && model.q) || ((index > 7) && (!model.q))))) {
+			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		} else {
+			var nextPlayer = !model.q;
+			var nextBoard = A2($author$project$Main$boardClicked, index, model.g);
+			var lastStoneInPitIndex = A2($author$project$Main$lastStonePitPosition, index, model.g);
+			return _Utils_Tuple2(
+				_Utils_update(
+					model,
+					{
+						g: nextBoard,
+						G: $author$project$Main$calculateGameFinished(nextBoard),
+						H: lastStoneInPitIndex,
+						q: nextPlayer
+					}),
+				$elm$core$Platform$Cmd$none);
+		}
 	});
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$h3 = _VirtualDom_node('h3');
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
@@ -5449,7 +5501,7 @@ var $elm$html$Html$Events$onClick = function (msg) {
 };
 var $author$project$Main$boardCardStyle = F2(
 	function (playerOnesTurn, index) {
-		return (((!playerOnesTurn) && (index < 7)) || (playerOnesTurn && (index > 7))) ? _List_fromArray(
+		return (((!playerOnesTurn) && (index < 7)) || (playerOnesTurn && (index >= 7))) ? _List_fromArray(
 			[
 				$elm$html$Html$Events$onClick(index),
 				A2(
@@ -5467,7 +5519,7 @@ var $author$project$Main$boardCardStyle = F2(
 				$elm$html$Html$Attributes$style,
 				'grid-area',
 				$author$project$Main$areaFromIndex(index)),
-				A2($elm$html$Html$Attributes$style, 'background', '#36454F'),
+				A2($elm$html$Html$Attributes$style, 'background', 'black'),
 				A2($elm$html$Html$Attributes$style, 'border-radius', '6px'),
 				A2($elm$html$Html$Attributes$style, 'text-align', 'center'),
 				A2($elm$html$Html$Attributes$style, 'padding', '0.5rem')
@@ -5532,23 +5584,13 @@ var $elm$core$Array$indexedMap = F2(
 			A3($elm$core$Elm$JsArray$foldl, helper, initialBuilder, tree));
 	});
 var $author$project$Main$viewBoard = function (model) {
-	var boardGenerator = $author$project$Main$boardCard(model.t);
+	var boardGenerator = $author$project$Main$boardCard(model.q);
 	return A2(
 		$elm$html$Html$div,
 		$author$project$Main$boardSyle,
 		$elm$core$Array$toList(
-			A2($elm$core$Array$indexedMap, boardGenerator, model.w)));
+			A2($elm$core$Array$indexedMap, boardGenerator, model.g)));
 };
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (!maybe.$) {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
 var $author$project$Main$viewPitPlayer = F2(
 	function (player, board) {
 		return (!player) ? A2(
@@ -5583,6 +5625,35 @@ var $author$project$Main$viewPitPlayer = F2(
 							A2($elm$core$Array$get, 7, board))) + ' Stones'))
 				]));
 	});
+var $author$project$Main$winnerPlayer = function (model) {
+	return (_Utils_cmp(
+		A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			A2($elm$core$Array$get, 0, model.g)),
+		A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			A2($elm$core$Array$get, 7, model.g))) > 0) ? 'Player 1' : ((_Utils_cmp(
+		A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			A2($elm$core$Array$get, 0, model.g)),
+		A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			A2($elm$core$Array$get, 7, model.g))) < 0) ? 'Player 2' : 'None');
+};
+var $author$project$Main$viewWinnerIfGameFinished = function (model) {
+	return (!model.G) ? A2($elm$html$Html$div, _List_Nil, _List_Nil) : A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				$elm$html$Html$text(
+				'Winner is' + $author$project$Main$winnerPlayer(model))
+			]));
+};
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -5605,14 +5676,33 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						$elm$html$Html$text(
-						'It\'s your turn Player ' + (model.t ? ' 1 ' : ' 0 '))
+						'It\'s your turn Player ' + (model.q ? ' 1 ' : ' 0 '))
 					])),
 				$author$project$Main$viewBoard(model),
-				A2($author$project$Main$viewPitPlayer, 0, model.w),
-				A2($author$project$Main$viewPitPlayer, 1, model.w)
+				A2($author$project$Main$viewPitPlayer, 0, model.g),
+				A2($author$project$Main$viewPitPlayer, 1, model.g),
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						'Last stone was in pit with id: ' + A2(
+							$elm$core$Maybe$withDefault,
+							'Not set yet',
+							A2($elm$core$Maybe$map, $elm$core$String$fromInt, model.H)))
+					])),
+				$author$project$Main$viewWinnerIfGameFinished(model)
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
-	{av: $author$project$Main$init, aB: $author$project$Main$subscriptions, aD: $author$project$Main$update, aE: $author$project$Main$view});
+	{
+		ax: $author$project$Main$init,
+		aD: function (_v0) {
+			return $elm$core$Platform$Sub$none;
+		},
+		aF: $author$project$Main$update,
+		aG: $author$project$Main$view
+	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));

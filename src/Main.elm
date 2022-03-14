@@ -5,7 +5,6 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (style)
 import Html.Events exposing (onClick)
-import Task
 
 
 main : Program () Model Msg
