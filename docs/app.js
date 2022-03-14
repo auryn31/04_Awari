@@ -2704,7 +2704,7 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		p: func(record.p),
+		q: func(record.q),
 		N: record.N,
 		K: record.K
 	}
@@ -2974,7 +2974,7 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.p;
+		var message = !tag ? value : tag < 3 ? value.a : value.q;
 		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.N;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
@@ -5275,7 +5275,7 @@ var $author$project$Main$init = function (_v0) {
 				A2($elm$core$Array$repeat, 14, 0)),
 			G: false,
 			H: $elm$core$Maybe$Nothing,
-			q: false
+			m: false
 		},
 		$elm$core$Platform$Cmd$none);
 };
@@ -5378,6 +5378,40 @@ var $author$project$Main$calculateGameFinished = function (board) {
 		0,
 		A2($elm$core$Array$get, 7, board)));
 };
+var $author$project$Main$changesOnBoardAfterStonesSet = F3(
+	function (playerOne, lastStonesIndex, board) {
+		if (lastStonesIndex.$ === 1) {
+			return board;
+		} else {
+			var index = lastStonesIndex.a;
+			if (A2(
+				$elm$core$Maybe$withDefault,
+				0,
+				A2($elm$core$Array$get, index, board)) === 1) {
+				if ((!index) || (index === 7)) {
+					return board;
+				} else {
+					var sumStones = A2(
+						$elm$core$Maybe$withDefault,
+						0,
+						A2($elm$core$Array$get, 14 - index, board)) + 1;
+					var currentPit = playerOne ? A2(
+						$elm$core$Maybe$withDefault,
+						0,
+						A2($elm$core$Array$get, 7, board)) : A2(
+						$elm$core$Maybe$withDefault,
+						0,
+						A2($elm$core$Array$get, 0, board));
+					var baordWithIndexZero = A3($elm$core$Array$set, index, 0, board);
+					var baordWithOppositeZero = A3($elm$core$Array$set, 14 - index, 0, baordWithIndexZero);
+					var boardWithPitSum = playerOne ? A3($elm$core$Array$set, 7, sumStones + currentPit, baordWithOppositeZero) : A3($elm$core$Array$set, 0, sumStones + currentPit, baordWithOppositeZero);
+					return boardWithPitSum;
+				}
+			} else {
+				return board;
+			}
+		}
+	});
 var $author$project$Main$calcLastStonePosition = F3(
 	function (index, board, stones) {
 		calcLastStonePosition:
@@ -5411,20 +5445,21 @@ var $elm$core$Basics$not = _Basics_not;
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		var index = msg;
-		if ((index === 7) || ((!index) || (((index < 7) && model.q) || ((index > 7) && (!model.q))))) {
+		if ((index === 7) || ((!index) || (((index < 7) && model.m) || ((index > 7) && (!model.m))))) {
 			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		} else {
-			var nextPlayer = !model.q;
 			var nextBoard = A2($author$project$Main$boardClicked, index, model.g);
 			var lastStoneInPitIndex = A2($author$project$Main$lastStonePitPosition, index, model.g);
+			var nextPlayer = ((!A2($elm$core$Maybe$withDefault, 1, lastStoneInPitIndex)) || (A2($elm$core$Maybe$withDefault, 1, lastStoneInPitIndex) === 7)) ? model.m : (!model.m);
+			var boardAfterStonesSet = A3($author$project$Main$changesOnBoardAfterStonesSet, model.m, lastStoneInPitIndex, nextBoard);
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
 					{
-						g: nextBoard,
-						G: $author$project$Main$calculateGameFinished(nextBoard),
+						g: boardAfterStonesSet,
+						G: $author$project$Main$calculateGameFinished(boardAfterStonesSet),
 						H: lastStoneInPitIndex,
-						q: nextPlayer
+						m: nextPlayer
 					}),
 				$elm$core$Platform$Cmd$none);
 		}
@@ -5584,7 +5619,7 @@ var $elm$core$Array$indexedMap = F2(
 			A3($elm$core$Elm$JsArray$foldl, helper, initialBuilder, tree));
 	});
 var $author$project$Main$viewBoard = function (model) {
-	var boardGenerator = $author$project$Main$boardCard(model.q);
+	var boardGenerator = $author$project$Main$boardCard(model.m);
 	return A2(
 		$elm$html$Html$div,
 		$author$project$Main$boardSyle,
@@ -5676,7 +5711,7 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						$elm$html$Html$text(
-						'It\'s your turn Player ' + (model.q ? ' 1 ' : ' 0 '))
+						'It\'s your turn Player ' + (model.m ? ' 1 ' : ' 0 '))
 					])),
 				$author$project$Main$viewBoard(model),
 				A2($author$project$Main$viewPitPlayer, 0, model.g),
