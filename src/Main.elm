@@ -31,6 +31,7 @@ init _ =
 
 type Msg
     = BoardClicked Int
+    | Reset
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -52,6 +53,9 @@ update msg model =
                         determineNextPlayer lastStoneInPitIndex model.playerOnesTurn boardAfterStonesSet
                 in
                 ( { model | board = boardAfterStonesSet, playerOnesTurn = nextPlayer, gameFinished = calculateGameFinished boardAfterStonesSet }, Cmd.none )
+
+        Reset ->
+            init ()
 
 
 boardLength : Int
@@ -169,23 +173,36 @@ changesOnBoardAfterStonesSet playerOne lastStonesIndex board =
 view : Model -> Html Msg
 view model =
     div [ style "margin" "4rem" ]
-        [ h1 [] [ text "Board" ]
-        , h3 []
+        [ h1 [] [ text "Awari" ]
+        , getPlayerTurnText False model.playerOnesTurn
+        , viewBoard model
+        , viewWinnerIfGameFinished model
+        , getPlayerTurnText True model.playerOnesTurn
+        , div
+            [ style "display" "flex"
+            , style "justify-content" "center"
+            ]
+            [ button [ onClick Reset, style "max-width" "10rem", style "margin" "0", style "display" "inline-block" ] [ text "Restart" ] ]
+        ]
+
+
+getPlayerTurnText : Bool -> Bool -> Html msg
+getPlayerTurnText playerOne playerOnesTurn =
+    if playerOne && playerOnesTurn || not playerOnesTurn && not playerOne then
+        div [ style "height" "2rem", style "margin" "1rem 0", style "font-size" "1.5rem" ]
             [ text
                 ("It's your turn Player "
-                    ++ (if model.playerOnesTurn then
-                            " 1 "
+                    ++ (if playerOnesTurn then
+                            " 2 "
 
                         else
-                            " 0 "
+                            " 1 "
                        )
                 )
             ]
-        , viewBoard model
-        , viewPitPlayer 0 model.board
-        , viewPitPlayer 1 model.board
-        , viewWinnerIfGameFinished model
-        ]
+
+    else
+        div [ style "height" "2rem", style "margin" "1rem", style "font-size" "1.5rem" ] []
 
 
 viewWinnerIfGameFinished : Model -> Html msg
