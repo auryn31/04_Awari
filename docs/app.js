@@ -5889,6 +5889,29 @@ var $author$project$Main$viewBoard = function (model) {
 		$elm$core$Array$toList(
 			A2($elm$core$Array$indexedMap, boardGenerator, model.j)));
 };
+var $elm$html$Html$details = _VirtualDom_node('details');
+var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$html$Html$summary = _VirtualDom_node('summary');
+var $author$project$Main$viewDescription = A2(
+	$elm$html$Html$details,
+	_List_Nil,
+	_List_fromArray(
+		[
+			A2(
+			$elm$html$Html$summary,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text('How the game works')
+				])),
+			A2(
+			$elm$html$Html$p,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text('\n        Awari is an ancient African game played with seven sticks and thirty-six stones or beans laid out as shown above. The board is divided into six compartments or pits on each side. In addition, there are two special home pits at the ends.\n\n        A move is made by taking all the beans from any (non-empty) pit on your own side. Starting from the pit to the right of this one, these beans are ‘sown’ one in each pit working around the board anticlockwise.\n\n        A turn consists of one or two moves. If the last bean of your move is sown in your own home you may take a second move.\n\n        If the last bean sown in a move lands in an empty pit, provided that the opposite pit is not empty, all the beans in the opposite pit, together with the last bean sown are ‘captured’ and moved to the player’s home.\n\n        When either side is empty, the game is finished. The player with the most beans in his home has won.\n        ')
+				]))
+		]));
 var $author$project$Main$winnerPlayer = function (model) {
 	return (_Utils_cmp(
 		$author$project$Main$getLeftPitValue(model.j),
@@ -5922,6 +5945,7 @@ var $author$project$Main$view = function (model) {
 					[
 						$elm$html$Html$text('Awari')
 					])),
+				$author$project$Main$viewDescription,
 				A2($author$project$Main$getPlayerTurnText, false, model.m),
 				$author$project$Main$viewBoard(model),
 				$author$project$Main$viewWinnerIfGameFinished(model),
